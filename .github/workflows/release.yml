@@ -1,0 +1,85 @@
+name: Đóng gói app (Mac, Windows, Web)
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: --mac
+          - os: windows-latest
+            target: --win
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build bản web cho app máy tính
+        run: npm run build
+        env:
+          BASE_PATH: ./
+      - name: Chép bản web vào app
+        run: node -e "require('fs').cpSync('dist','desktop/app',{recursive:true})"
+      - name: Đóng gói
+        working-directory: desktop
+        run: |
+          npm install --no-audit --no-fund
+          npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.os }}
+          path: |
+            desktop/release/*.dmg
+            desktop/release/*.exe
+          if-no-files-found: error
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Nén bản web
+        run: cd dist && zip -r ../TaiChinh-web.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: TaiChinh-web.zip
+
+  release:
+    needs: [desktop, web]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - run: ls -la out
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('build-{0}', github.run_number) }}
+          name: Tài Chính ${{ github.ref_type == 'tag' && github.ref_name || format('bản thử {0}', github.run_number) }}
+          files: out/*
+          body: |
+            **Cách cài**
+            - **Mac:** tải file `.dmg` (máy chip Apple M1/M2/M3… chọn `arm64`, máy Intel chọn `x64`), mở ra và kéo **Tài Chính** vào Applications. Lần đầu mở: chuột phải vào app → **Open** → **Open**.
+            - **Windows:** tải file `.exe` và chạy. Nếu Windows báo "đã bảo vệ máy tính", bấm **More info → Run anyway**.
+            - **iPhone:** mở trang web của app bằng Safari → nút Chia sẻ → **Thêm vào Màn hình chính**.
