@@ -14,7 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-latest
+          # Máy Mac chip Intel trên GitHub ít bị chờ hơn; vẫn build được cả bản arm64 (M1/M2/M3…) và x64
+          - os: macos-15-intel
             target: --mac
           - os: windows-latest
             target: --win
