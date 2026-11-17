@@ -1,31 +1,31 @@
 {
   "name": "tai-chinh",
-  "productName": "Tài Chính",
-  "version": "1.0.0",
+  "productName": "Tai Chinh",
+  "version": "1.0.1",
   "description": "Quản lý thu chi, 6 hũ tiết kiệm và kế hoạch đầu tư",
   "author": "Vũ Bình",
   "main": "main.cjs",
   "private": true,
   "devDependencies": {
-    "electron": "^33.2.0",
+    "electron": "^38.0.0",
     "electron-builder": "^25.1.8"
   },
   "build": {
     "appId": "vn.vubinh.taichinh",
-    "productName": "Tài Chính",
+    "productName": "Tai Chinh",
     "artifactName": "TaiChinh-${version}-${os}-${arch}.${ext}",
     "files": [
       "main.cjs",
       "app/**/*",
-      "build/icon.png"
+      "resources/icon.png"
     ],
     "directories": {
-      "buildResources": "build",
+      "buildResources": "resources",
       "output": "release"
     },
     "mac": {
       "category": "public.app-category.finance",
-      "icon": "build/icon.png",
+      "icon": "resources/icon.png",
       "target": [
         {
           "target": "dmg",
@@ -35,10 +35,14 @@
           ]
         }
       ],
-      "identity": null
+      "identity": null,
+      "extendInfo": {
+        "CFBundleDisplayName": "Tài Chính",
+        "LSApplicationCategoryType": "public.app-category.finance"
+      }
     },
     "win": {
-      "icon": "build/icon.ico",
+      "icon": "resources/icon.ico",
       "target": [
         {
           "target": "nsis",
