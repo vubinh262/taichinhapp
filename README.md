@@ -23,7 +23,17 @@ Bản cài được GitHub Actions tự đóng gói mỗi khi tạo tag `v*` (xe
 git tag v1.0.1 && git push origin v1.0.1
 ```
 
+## Tự cập nhật
+
+- **Mac / Windows (từ bản 1.0.3):** mỗi lần đẩy code lên `main`, workflow *Cập nhật giao diện* đăng gói mới ở bản phát hành `web-latest`. App tự tải khi mở (và mỗi 6 tiếng), rồi hỏi tải lại. Trên Mac còn có menu *Tài Chính → Kiểm tra cập nhật…*
+- **iPhone:** bản web trên GitHub Pages tự cập nhật khi mở app.
+- Chỉ khi sửa thư mục `desktop/` mới cần cài lại: tăng `version` trong `desktop/package.json` và `MIN_SHELL` trong `.github/workflows/web.yml`, rồi chạy workflow *Đóng gói app*.
+
 ## Đưa bản web lên mạng (cho iPhone)
+
+Bật **Settings → Pages → Source: GitHub Actions** (repo cần công khai hoặc có gói GitHub Pro). Trang sẽ ở `https://vubinh262.github.io/taichinhapp/`.
+
+Hoặc dùng dịch vụ khác:
 
 Bản web là trang tĩnh (Vite). Có thể đưa lên Vercel / Netlify / Cloudflare Pages miễn phí:
 nhập repo này, lệnh build `npm run build`, thư mục xuất `dist`.

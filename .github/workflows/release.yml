@@ -23,6 +23,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -33,7 +35,10 @@ jobs:
         env:
           BASE_PATH: ./
       - name: Chép bản web vào app
-        run: node -e "require('fs').cpSync('dist','desktop/app',{recursive:true})"
+        shell: bash
+        run: |
+          echo "{\"version\": $(git rev-list --count HEAD)}" > dist/version.json
+          node -e "require('fs').cpSync('dist','desktop/app',{recursive:true})"
       - name: Đóng gói
         working-directory: desktop
         run: |
@@ -86,4 +91,6 @@ jobs:
             **Cách cài**
             - **Mac:** tải file `.dmg` (máy chip Apple M1/M2/M3… chọn `arm64`, máy Intel chọn `x64`), mở ra và kéo **Tài Chính** vào Applications. Lần đầu mở: chuột phải vào app → **Open** → **Open**.
             - **Windows:** tải file `.exe` và chạy. Nếu Windows báo "đã bảo vệ máy tính", bấm **More info → Run anyway**.
-            - **iPhone:** mở trang web của app bằng Safari → nút Chia sẻ → **Thêm vào Màn hình chính**.
+            - **iPhone:** mở https://vubinh262.github.io/taichinhapp/ bằng Safari → nút Chia sẻ → **Thêm vào Màn hình chính**.
+
+            Từ bản 1.0.3, app tự cập nhật giao diện mỗi khi có bản mới – không cần cài lại.

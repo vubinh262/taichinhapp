@@ -1,7 +1,7 @@
 {
   "name": "tai-chinh",
   "productName": "Tai Chinh",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Quản lý thu chi, 6 hũ tiết kiệm và kế hoạch đầu tư",
   "author": "Vũ Bình",
   "main": "main.cjs",
@@ -17,7 +17,9 @@
     "files": [
       "main.cjs",
       "app/**/*",
-      "resources/icon.png"
+      "resources/icon.png",
+      "node_modules/**/*",
+      "package.json"
     ],
     "directories": {
       "buildResources": "resources",
@@ -59,5 +61,8 @@
       "shortcutName": "Tài Chính"
     },
     "afterPack": "./adhoc-sign.cjs"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16"
   }
 }

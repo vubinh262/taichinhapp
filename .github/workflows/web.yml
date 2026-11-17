@@ -1,0 +1,81 @@
+name: Cập nhật giao diện (tự động)
+
+# Mỗi lần đẩy code lên nhánh main:
+#  1. Đăng gói giao diện mới ở bản phát hành "web-latest" → app Mac/Windows tự tải về khi mở
+#  2. Đưa bản web lên GitHub Pages → iPhone (đã thêm vào Màn hình chính) tự nhận bản mới
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: web-update
+  cancel-in-progress: true
+
+env:
+  # Phiên bản khung app tối thiểu để nhận cập nhật tự động. Chỉ tăng khi sửa thư mục desktop/.
+  MIN_SHELL: 1.0.3
+
+jobs:
+  desktop-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build giao diện cho app máy tính
+        run: npm run build
+        env:
+          BASE_PATH: ./
+      - name: Ghi số phiên bản
+        run: |
+          V=$(git rev-list --count HEAD)
+          MSG=$(git log -1 --format=%s | sed 's/"/\\"/g')
+          echo "{\"version\": $V}" > dist/version.json
+          echo "{\"version\": $V, \"sha\": \"${GITHUB_SHA::7}\", \"minShell\": \"$MIN_SHELL\", \"notes\": \"$MSG\"}" > version.json
+          cat version.json
+      - name: Nén gói giao diện
+        run: cd dist && zip -qr ../TaiChinh-web-desktop.zip .
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: web-latest
+          name: Giao diện mới nhất (app tự cập nhật)
+          prerelease: true
+          make_latest: false
+          body: Gói này được app Mac/Windows tự tải về. Bạn không cần tải tay.
+          files: |
+            version.json
+            TaiChinh-web-desktop.zip
+
+  pages:
+    runs-on: ubuntu-latest
+    # Cần bật GitHub Pages: Settings → Pages → Source: GitHub Actions
+    continue-on-error: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4
