@@ -48,8 +48,14 @@ function mapAuthErrorMessage(errorCode: string): string {
       return 'Không thể kết nối mạng. Vui lòng kiểm tra lại đường truyền internet.';
     case 'auth/operation-not-allowed':
       return 'Phương thức đăng nhập này chưa được kích hoạt trong cài đặt Firebase.';
+    case 'auth/unauthorized-domain':
+      return 'Địa chỉ của app chưa được Firebase cho phép đăng nhập Google. Bạn dùng Đăng nhập bằng Email trong lúc chờ cấu hình nhé.';
+    case 'auth/operation-not-supported-in-this-environment':
+      return 'Môi trường này chưa hỗ trợ đăng nhập Google. Bạn dùng Đăng nhập bằng Email nhé.';
+    case 'auth/web-storage-unsupported':
+      return 'Thiết bị đang chặn bộ nhớ trình duyệt nên không đăng nhập Google được. Bạn dùng Đăng nhập bằng Email nhé.';
     default:
-      return 'Đã xảy ra lỗi trong quá trình xác thực. Vui lòng thử lại.';
+      return `Đã xảy ra lỗi trong quá trình xác thực${errorCode ? ` (${errorCode})` : ''}. Vui lòng thử lại hoặc dùng Đăng nhập bằng Email.`;
   }
 }
 

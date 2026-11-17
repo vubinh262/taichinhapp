@@ -1,7 +1,7 @@
 {
   "name": "tai-chinh",
   "productName": "Tai Chinh",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Quản lý thu chi, 6 hũ tiết kiệm và kế hoạch đầu tư",
   "author": "Vũ Bình",
   "main": "main.cjs",
