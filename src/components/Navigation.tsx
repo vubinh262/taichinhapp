@@ -18,7 +18,8 @@ import {
   WifiOff,
   CloudOff,
   Sun,
-  Moon
+  Moon,
+  TrendingUp
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -29,11 +30,30 @@ interface NavigationProps {
 
 type NavItem = { id: ActiveTab; label: string; short: string; icon: React.FC<{ className?: string }>; match: ActiveTab[] };
 
+const JarIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <path d="M8 3h8M9 3v3c-2.5 1-4 3-4 6v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6c0-3-1.5-5-4-6V3" />
+    <path d="M5 14h14" />
+  </svg>
+);
+
+/** Thanh tab dưới đáy (điện thoại) */
 const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Tổng quan', short: 'Tổng quan', icon: Home, match: ['home'] },
+  { id: 'jars', label: '6 hũ', short: '6 hũ', icon: JarIcon, match: ['jars'] },
+  { id: 'income-expense', label: 'Báo cáo', short: 'Báo cáo', icon: BarChart3, match: ['income-expense', 'cashflow'] },
+  { id: 'accounts', label: 'Tài sản', short: 'Tài sản', icon: WalletCards, match: ['accounts', 'invest'] },
+];
+
+/** Thanh bên (máy tính) */
+const SIDEBAR_ITEMS: NavItem[] = [
+  { id: 'home', label: 'Tổng quan', short: 'Tổng quan', icon: Home, match: ['home'] },
   { id: 'transactions', label: 'Giao dịch', short: 'Giao dịch', icon: ReceiptText, match: ['transactions'] },
+  { id: 'jars', label: '6 hũ', short: '6 hũ', icon: JarIcon, match: ['jars'] },
   { id: 'income-expense', label: 'Báo cáo', short: 'Báo cáo', icon: BarChart3, match: ['income-expense', 'cashflow'] },
   { id: 'accounts', label: 'Tài sản', short: 'Tài sản', icon: WalletCards, match: ['accounts'] },
+  { id: 'invest', label: 'Đầu tư', short: 'Đầu tư', icon: TrendingUp, match: ['invest'] },
+  { id: 'setup', label: 'Cài đặt', short: 'Cài đặt', icon: Settings2, match: ['setup'] },
 ];
 
 const SyncIcon: React.FC<{ status: string }> = ({ status }) => {
@@ -102,7 +122,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab,
           </button>
 
           <nav aria-label="Điều hướng chính" className="flex flex-col gap-1">
-            {[...NAV_ITEMS, { id: 'setup' as ActiveTab, label: 'Cài đặt', short: 'Cài đặt', icon: Settings2, match: ['setup'] as ActiveTab[] }].map((item) => {
+            {SIDEBAR_ITEMS.map((item) => {
               const Icon = item.icon;
               const active = isActive(item);
               return (
@@ -159,6 +179,13 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab,
               className="glass w-11 h-11 rounded-full flex items-center justify-center cursor-pointer"
             >
               {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+            </button>
+            <button
+              onClick={() => setActiveTab('transactions')}
+              aria-label="Giao dịch"
+              className={`w-11 h-11 rounded-full flex items-center justify-center cursor-pointer ${activeTab === 'transactions' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'glass'}`}
+            >
+              <ReceiptText className="w-[18px] h-[18px]" />
             </button>
             <button
               onClick={() => setActiveTab('setup')}

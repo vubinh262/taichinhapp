@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Transaction, TransactionType } from '../types';
 import { useFinance } from '../context/FinanceContext';
+import { QuickAdd } from './QuickAdd';
 import { CategoryIcon } from './CategoryIcon';
 import { 
   X, 
@@ -313,6 +314,16 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
         {/* Scrollable Form Content */}
         <div className="overflow-y-auto flex-1 p-4 sm:p-6 space-y-4 sm:space-y-5 overscroll-contain">
+          {!editingTransaction && type !== 'TRANSFER' && (
+            <>
+              <QuickAdd onSaved={onClose} />
+              <div className="flex items-center gap-3 text-xs font-medium text-slate-500" aria-hidden>
+                <span className="flex-1 h-px bg-slate-900/10 dark:bg-white/10" />
+                hoặc nhập tay
+                <span className="flex-1 h-px bg-slate-900/10 dark:bg-white/10" />
+              </div>
+            </>
+          )}
           {error && (
             <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 rounded-xl text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />

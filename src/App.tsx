@@ -16,6 +16,10 @@ import { TransactionsData } from './components/TransactionsData';
 import { SetupView } from './components/SetupView';
 import { TransactionModal } from './components/TransactionModal';
 import { HomeView } from './components/HomeView';
+import { JarsView } from './components/JarsView';
+import { InvestView } from './components/InvestView';
+import { JarsProvider } from './context/JarsContext';
+import { TrendingUp, ChevronRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 function DashboardContent() {
@@ -115,7 +119,26 @@ function DashboardContent() {
               )}
               {activeTab === 'cashflow' && <CashFlowReport timeRange={timeRange} />}
               {activeTab === 'income-expense' && <IncomeExpenseReport timeRange={timeRange} />}
-              {activeTab === 'accounts' && <AccountsClassification onOpenTransfer={handleOpenTransfer} />}
+              {activeTab === 'jars' && <JarsView onOpenTransfer={handleOpenTransfer} />}
+              {activeTab === 'invest' && <InvestView />}
+              {activeTab === 'accounts' && (
+                <div className="flex flex-col gap-5">
+                  <button
+                    onClick={() => setActiveTab('invest')}
+                    className="w-full rounded-3xl p-4 bg-slate-900 text-white flex items-center gap-3 text-left shadow-[0_12px_26px_rgba(17,24,39,0.22),inset_0_1px_0_rgba(255,255,255,0.15)] cursor-pointer"
+                  >
+                    <span className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                      <TrendingUp className="w-5 h-5 text-emerald-400" />
+                    </span>
+                    <span className="flex-1 flex flex-col">
+                      <span className="text-[15px] font-bold">Tính phương án đầu tư</span>
+                      <span className="text-xs text-slate-300">Tích lũy vàng, mua nhà đất</span>
+                    </span>
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <AccountsClassification onOpenTransfer={handleOpenTransfer} />
+                </div>
+              )}
               {activeTab === 'transactions' && (
                 <TransactionsData
                   onOpenNewTransaction={handleOpenNewTransaction}
@@ -146,7 +169,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <FinanceProvider>
-          <DashboardContent />
+          <JarsProvider>
+            <DashboardContent />
+          </JarsProvider>
         </FinanceProvider>
       </AuthProvider>
     </ThemeProvider>

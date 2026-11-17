@@ -44,7 +44,7 @@ export interface Transaction {
   createdAt: number;
 }
 
-export type ActiveTab = 'home' | 'cashflow' | 'income-expense' | 'accounts' | 'transactions' | 'setup';
+export type ActiveTab = 'home' | 'jars' | 'invest' | 'cashflow' | 'income-expense' | 'accounts' | 'transactions' | 'setup';
 
 export type TimeRange = 'THIS_MONTH' | 'LAST_MONTH' | 'THIS_QUARTER' | 'THIS_YEAR' | 'ALL' | 'CUSTOM';
 

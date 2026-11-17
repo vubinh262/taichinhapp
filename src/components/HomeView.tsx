@@ -3,6 +3,7 @@ import { useFinance } from '../context/FinanceContext';
 import { Transaction } from '../types';
 import { CategoryIcon } from './CategoryIcon';
 import { Loc, LocMood } from './Loc';
+import { useJars } from '../context/JarsContext';
 import { ArrowDownRight, ArrowUpRight, ArrowLeftRight, Plus, Sparkles } from 'lucide-react';
 
 interface HomeViewProps {
@@ -21,6 +22,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onGoReports
 }) => {
   const { transactions, categories, accounts, formatCurrency, netWorth } = useFinance();
+  const jars = useJars();
+  const useJarBudget = jars.monthIncome > 0;
 
   const data = useMemo(() => {
     const now = new Date();
@@ -82,6 +85,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     locMood = 'worried';
     const top = data.over[0];
     locText = <><b>{top.cat.name}</b> đã vượt hạn mức {formatCurrency(top.over)}. Mấy ngày tới mình tiết chế nhóm này chút nha?</>;
+  } else if (jars.monthIncome > 0 && jars.stats.some((x) => x.kind === 'save' && x.used === 0)) {
+    locMood = 'nudge';
+    const j = jars.stats.find((x) => x.kind === 'save' && x.used === 0)!;
+    locText = <>Hũ <b>{j.name}</b> tháng này chưa có đồng nào. Trích {formatCurrency(j.allocated)} luôn hôm nay nhé?</>;
   } else if (data.usedPct >= 80) {
     locMood = 'worried';
     locText = <>Đã dùng {data.usedPct}% ngân sách tháng mà còn {data.daysLeft} ngày. Chậm lại một chút nhé.</>;
@@ -118,23 +125,31 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <span className="text-sm font-semibold">Hôm nay được tiêu</span>
             <span className="text-xs font-semibold bg-white/20 px-2.5 py-1 rounded-full">Còn {data.daysLeft} ngày</span>
           </div>
-          <p className="relative mt-2 text-4xl lg:text-5xl font-bold tabular-nums tracking-tight">{formatCurrency(data.perDay)}</p>
+          <p className="relative mt-2 text-4xl lg:text-5xl font-bold tabular-nums tracking-tight">{formatCurrency(useJarBudget ? jars.perDay : data.perDay)}</p>
           <p className="relative mt-2 text-sm leading-relaxed text-white/90">
-            {data.totalBudget > 0
+            {useJarBudget
+              ? <>Hũ Thiết yếu + Hưởng thụ còn {formatCurrency(jars.spendableLeft)} cho đến cuối tháng.</>
+              : data.totalBudget > 0
               ? <>Ngân sách tháng còn {formatCurrency(data.remaining)}. Tiêu dưới mức này mỗi ngày là đúng kế hoạch.</>
-              : <>Đặt ngân sách cho các hạng mục chi để con số này chính xác hơn.</>}
+              : <>Ghi thu nhập hoặc đặt ngân sách để con số này chính xác hơn.</>}
           </p>
-          {data.totalBudget > 0 && (
-            <div className="relative mt-3">
-              <div className="h-2 rounded-full bg-white/25 overflow-hidden">
-                <div className="h-full rounded-full bg-white" style={{ width: `${data.usedPct}%` }} />
+          {(useJarBudget || data.totalBudget > 0) && (() => {
+            const pool = jars.stats.filter((x) => x.id === 'NEC' || x.id === 'PLAY');
+            const alloc = useJarBudget ? pool.reduce((a, x) => a + x.allocated, 0) : data.totalBudget;
+            const spent = useJarBudget ? pool.reduce((a, x) => a + x.used, 0) : data.expense;
+            const pct = alloc > 0 ? Math.min(100, Math.round((spent / alloc) * 100)) : 0;
+            return (
+              <div className="relative mt-3">
+                <div className="h-2 rounded-full bg-white/25 overflow-hidden">
+                  <div className="h-full rounded-full bg-white" style={{ width: `${pct}%` }} />
+                </div>
+                <div className="mt-1.5 flex justify-between text-xs text-white/90 tabular-nums">
+                  <span>Đã chi {formatCurrency(spent)}</span>
+                  <span>{useJarBudget ? 'Mức hũ' : 'Ngân sách'} {formatCurrency(alloc)}</span>
+                </div>
               </div>
-              <div className="mt-1.5 flex justify-between text-xs text-white/90 tabular-nums">
-                <span>Đã chi {formatCurrency(data.expense)}</span>
-                <span>Ngân sách {formatCurrency(data.totalBudget)}</span>
-              </div>
-            </div>
-          )}
+            );
+          })()}
         </section>
 
         {/* Lộc */}

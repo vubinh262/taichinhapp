@@ -90,3 +90,47 @@ export const Loc: React.FC<LocProps> = ({ mood = 'happy', size = 64, className, 
     </svg>
   );
 };
+
+/** Lộc theo giai đoạn lớn lên: 0 Hạt, 1 Mầm, 2 Lộc non, 3 Cây lộc */
+export const LocGrowth: React.FC<{ stage: number; size?: number; className?: string }> = ({ stage, size = 72, className }) => {
+  if (stage <= 0) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 120 120" className={className} aria-hidden>
+        <ellipse cx="60" cy="112" rx="22" ry="4" fill="#111827" opacity="0.08" />
+        <path d="M60 58c17 0 28 11 28 26s-11 24-28 24-28-9-28-24 11-26 28-26z" fill="#4ADE80" />
+        <circle cx="52" cy="84" r="3" fill="#111827" />
+        <circle cx="68" cy="84" r="3" fill="#111827" />
+        <path d="M56 93q4 3 8 0" stroke="#111827" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (stage === 1) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 120 120" className={className} aria-hidden>
+        <ellipse cx="60" cy="112" rx="24" ry="4" fill="#111827" opacity="0.08" />
+        <path d="M60 50c20 0 33 13 33 30s-13 30-33 30-33-11-33-30 13-30 33-30z" fill="#4ADE80" />
+        <path d="M60 51V40" stroke="#15803D" strokeWidth="4" strokeLinecap="round" />
+        <path d="M60 42c3-9 11-12 18-10-1 8-9 12-18 10z" fill="#16A34A" />
+        <circle cx="51" cy="80" r="3.2" fill="#111827" />
+        <circle cx="69" cy="80" r="3.2" fill="#111827" />
+        <path d="M55 90q5 4 10 0" stroke="#111827" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (stage === 2) return <Loc mood="happy" size={size} className={className} />;
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" className={className} aria-hidden>
+      <ellipse cx="60" cy="112" rx="28" ry="4" fill="#111827" opacity="0.08" />
+      <path d="M60 44c22 0 38 14 38 34s-16 32-38 32-38-12-38-32 16-34 38-34z" fill="#16A34A" />
+      <ellipse cx="44" cy="58" rx="10" ry="6" fill="#FFFFFF" opacity="0.4" transform="rotate(-30 44 58)" />
+      <path d="M60 45V14" stroke="#15803D" strokeWidth="4" strokeLinecap="round" />
+      <path d="M60 36c-5-10-15-12-23-8 3 9 13 12 23 8z" fill="#22C55E" />
+      <path d="M60 30c4-10 14-13 22-10-2 9-12 13-22 10z" fill="#4ADE80" />
+      <path d="M60 20c-4-8-12-10-18-6 2 7 10 9 18 6z" fill="#4ADE80" />
+      <circle cx="60" cy="12" r="5" fill="#FACC15" />
+      <circle cx="49" cy="77" r="3.5" fill="#111827" />
+      <circle cx="71" cy="77" r="3.5" fill="#111827" />
+      <path d="M53 87q7 6 14 0" stroke="#111827" strokeWidth="3" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+};
