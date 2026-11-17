@@ -1,0 +1,8 @@
+{
+  "name": "Remix Báo cáo Tài chính Cá nhân",
+  "description": "Ứng dụng quản lý và báo cáo tài chính cá nhân gồm báo cáo dòng tiền, báo cáo thu chi, phân loại tài khoản, dữ liệu giao dịch và cài đặt cấu hình.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
