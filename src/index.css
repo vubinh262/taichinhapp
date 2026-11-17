@@ -2,18 +2,199 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Design tokens – "Minimal + Liquid Glass + xanh lá".
+ * Bảng màu emerald/teal cũ được ánh xạ sang một tông xanh lá duy nhất,
+ * slate-50 thành nền xám ấm, font chuyển sang Be Vietnam Pro (hỗ trợ tiếng Việt tốt).
+ */
+@theme {
+  --font-sans: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+
+  --color-emerald-50: #f0fdf4;
+  --color-emerald-100: #dcfce7;
+  --color-emerald-200: #bbf7d0;
+  --color-emerald-300: #86efac;
+  --color-emerald-400: #4ade80;
+  --color-emerald-500: #22c55e;
+  --color-emerald-600: #15803d;
+  --color-emerald-700: #15803d;
+  --color-emerald-800: #166534;
+  --color-emerald-900: #14532d;
+  --color-emerald-950: #052e16;
+
+  --color-teal-50: #f0fdf4;
+  --color-teal-100: #dcfce7;
+  --color-teal-200: #bbf7d0;
+  --color-teal-300: #86efac;
+  --color-teal-400: #4ade80;
+  --color-teal-500: #16a34a;
+  --color-teal-600: #15803d;
+  --color-teal-700: #15803d;
+  --color-teal-800: #166534;
+  --color-teal-900: #14532d;
+  --color-teal-950: #052e16;
+
+  --color-slate-50: #eceeeb;
+
+  /* Giảm bớt màu: các tông phụ chuyển về xám-đen, đỏ chuyển về cam cảnh báo */
+  --color-indigo-50: #f6f7f6;
+  --color-indigo-100: #eceeeb;
+  --color-indigo-200: #d1d5db;
+  --color-indigo-300: #9ca3af;
+  --color-indigo-400: #6b7280;
+  --color-indigo-500: #374151;
+  --color-indigo-600: #1f2937;
+  --color-indigo-700: #111827;
+  --color-indigo-800: #111827;
+  --color-indigo-900: #0b0f17;
+  --color-indigo-950: #05070b;
+  --color-rose-50: #fff7ed;
+  --color-rose-100: #ffedd5;
+  --color-rose-200: #fed7aa;
+  --color-rose-300: #fdba74;
+  --color-rose-400: #fb923c;
+  --color-rose-500: #f97316;
+  --color-rose-600: #c2410c;
+  --color-rose-700: #c2410c;
+  --color-rose-800: #9a3412;
+  --color-rose-900: #7c2d12;
+  --color-rose-950: #431407;
+  --color-blue-50: #f6f7f6;
+  --color-blue-100: #eceeeb;
+  --color-blue-200: #d1d5db;
+  --color-blue-300: #9ca3af;
+  --color-blue-400: #6b7280;
+  --color-blue-500: #374151;
+  --color-blue-600: #1f2937;
+  --color-blue-700: #111827;
+  --color-blue-800: #111827;
+  --color-blue-900: #0b0f17;
+  --color-blue-950: #05070b;
+  --color-violet-50: #f6f7f6;
+  --color-violet-100: #eceeeb;
+  --color-violet-200: #d1d5db;
+  --color-violet-300: #9ca3af;
+  --color-violet-400: #6b7280;
+  --color-violet-500: #374151;
+  --color-violet-600: #1f2937;
+  --color-violet-700: #111827;
+  --color-violet-800: #111827;
+  --color-violet-900: #0b0f17;
+  --color-violet-950: #05070b;
+  --color-sky-50: #f6f7f6;
+  --color-sky-100: #eceeeb;
+  --color-sky-200: #d1d5db;
+  --color-sky-300: #9ca3af;
+  --color-sky-400: #6b7280;
+  --color-sky-500: #374151;
+  --color-sky-600: #1f2937;
+  --color-sky-700: #111827;
+  --color-sky-800: #111827;
+  --color-sky-900: #0b0f17;
+  --color-sky-950: #05070b;
+  --color-cyan-50: #f6f7f6;
+  --color-cyan-100: #eceeeb;
+  --color-cyan-200: #d1d5db;
+  --color-cyan-300: #9ca3af;
+  --color-cyan-400: #6b7280;
+  --color-cyan-500: #374151;
+  --color-cyan-600: #1f2937;
+  --color-cyan-700: #111827;
+  --color-cyan-800: #111827;
+  --color-cyan-900: #0b0f17;
+  --color-cyan-950: #05070b;
+  --color-purple-50: #f6f7f6;
+  --color-purple-100: #eceeeb;
+  --color-purple-200: #d1d5db;
+  --color-purple-300: #9ca3af;
+  --color-purple-400: #6b7280;
+  --color-purple-500: #374151;
+  --color-purple-600: #1f2937;
+  --color-purple-700: #111827;
+  --color-purple-800: #111827;
+  --color-purple-900: #0b0f17;
+  --color-purple-950: #05070b;
+  --color-red-50: #fff7ed;
+  --color-red-100: #ffedd5;
+  --color-red-200: #fed7aa;
+  --color-red-300: #fdba74;
+  --color-red-400: #fb923c;
+  --color-red-500: #f97316;
+  --color-red-600: #c2410c;
+  --color-red-700: #c2410c;
+  --color-red-800: #9a3412;
+  --color-red-900: #7c2d12;
+  --color-red-950: #431407;
+
+  --color-brand: #15803d;
+  --color-ink: #111827;
+}
+
 @layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #eceeeb;
+  }
+  .dark body {
+    background-color: #0b0f17;
   }
 }
 
+/* Số tiền: cùng font, chữ số đều nhau để cột thẳng hàng */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
-  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.01em;
 }
 
-/* Custom polished scrollbar */
+/* ---------- Liquid Glass ---------- */
+@layer components {
+  .glass {
+    background-color: rgb(255 255 255 / 0.72);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgb(255 255 255 / 0.95);
+    box-shadow:
+      0 1px 2px rgb(17 24 39 / 0.04),
+      0 10px 28px rgb(17 24 39 / 0.06),
+      inset 0 1px 0 #fff;
+  }
+  .dark .glass {
+    background-color: rgb(17 24 39 / 0.62);
+    border-color: rgb(255 255 255 / 0.08);
+    box-shadow:
+      0 10px 28px rgb(0 0 0 / 0.35),
+      inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+  .glass-strong {
+    background-color: rgb(255 255 255 / 0.82);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgb(255 255 255 / 0.95);
+    box-shadow: 0 12px 32px rgb(17 24 39 / 0.1), inset 0 1px 0 #fff;
+  }
+  .dark .glass-strong {
+    background-color: rgb(17 24 39 / 0.78);
+    border-color: rgb(255 255 255 / 0.1);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+}
+
+/* Các thẻ trắng có sẵn trong app được làm trong như kính */
+.bg-white:where(.rounded-2xl, .rounded-3xl, .rounded-xl) {
+  background-color: rgb(255 255 255 / 0.74);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* Vùng an toàn cho iPhone có tai thỏ / thanh home */
+.pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+}
+
+/* Thanh cuộn gọn */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -25,17 +206,9 @@
   background: #cbd5e1;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
 .dark ::-webkit-scrollbar-thumb {
   background: #334155;
 }
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -44,3 +217,11 @@
   scrollbar-width: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

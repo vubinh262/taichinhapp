@@ -15,10 +15,11 @@ import { AccountsClassification } from './components/AccountsClassification';
 import { TransactionsData } from './components/TransactionsData';
 import { SetupView } from './components/SetupView';
 import { TransactionModal } from './components/TransactionModal';
+import { HomeView } from './components/HomeView';
 import { AnimatePresence, motion } from 'motion/react';
 
 function DashboardContent() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('cashflow');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [timeRange, setTimeRange] = useState<TimeRange>('THIS_MONTH');
 
   // Modal State
@@ -44,54 +45,89 @@ function DashboardContent() {
     setIsTxModalOpen(true);
   };
 
+  const isReport = activeTab === 'cashflow' || activeTab === 'income-expense';
+  const rangeLabels: { id: TimeRange; label: string }[] = [
+    { id: 'THIS_MONTH', label: 'Tháng' },
+    { id: 'THIS_QUARTER', label: 'Quý' },
+    { id: 'THIS_YEAR', label: 'Năm' },
+    { id: 'ALL', label: 'Tất cả' }
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
-      {/* Top Header & Navigation */}
+    <div className="relative min-h-screen bg-slate-50 dark:bg-[#0B0F17] text-slate-900 dark:text-slate-100 transition-colors duration-200 overflow-x-hidden">
+      {/* Vệt sáng xanh rất nhẹ phía sau để hiệu ứng kính hiện rõ */}
+      <div aria-hidden className="pointer-events-none fixed -top-40 -right-40 w-[520px] h-[520px] rounded-full bg-emerald-200/70 dark:bg-emerald-900/30 blur-[90px]" />
+
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenNewTransaction={handleOpenNewTransaction}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-          >
-            {activeTab === 'cashflow' && (
-              <CashFlowReport timeRange={timeRange} />
-            )}
+      <main className="relative lg:pl-64 pb-32 lg:pb-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 lg:pt-8">
+          {isReport && (
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div role="tablist" aria-label="Loại báo cáo" className="glass inline-flex p-1 rounded-full">
+                {([['income-expense', 'Thu chi'], ['cashflow', 'Dòng tiền']] as [ActiveTab, string][]).map(([id, label]) => (
+                  <button
+                    key={id}
+                    role="tab"
+                    aria-selected={activeTab === id}
+                    onClick={() => setActiveTab(id)}
+                    className={`h-10 px-4 rounded-full text-sm font-semibold cursor-pointer ${activeTab === id ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'text-slate-600 dark:text-slate-400'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div role="tablist" aria-label="Kỳ báo cáo" className="glass inline-flex p-1 rounded-full">
+                {rangeLabels.map((r) => (
+                  <button
+                    key={r.id}
+                    role="tab"
+                    aria-selected={timeRange === r.id}
+                    onClick={() => setTimeRange(r.id)}
+                    className={`h-10 px-3.5 rounded-full text-sm font-semibold cursor-pointer ${timeRange === r.id ? 'bg-white text-slate-900 shadow-sm dark:bg-white/15 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-            {activeTab === 'income-expense' && (
-              <IncomeExpenseReport timeRange={timeRange} />
-            )}
-
-            {activeTab === 'accounts' && (
-              <AccountsClassification onOpenTransfer={handleOpenTransfer} />
-            )}
-
-            {activeTab === 'transactions' && (
-              <TransactionsData
-                onOpenNewTransaction={handleOpenNewTransaction}
-                onEditTransaction={handleEditTransaction}
-              />
-            )}
-
-            {activeTab === 'setup' && (
-              <SetupView />
-            )}
-          </motion.div>
-        </AnimatePresence>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12, ease: 'easeOut' }}
+            >
+              {activeTab === 'home' && (
+                <HomeView
+                  onOpenNewTransaction={handleOpenNewTransaction}
+                  onEditTransaction={handleEditTransaction}
+                  onGoTransactions={() => setActiveTab('transactions')}
+                  onGoReports={() => setActiveTab('income-expense')}
+                />
+              )}
+              {activeTab === 'cashflow' && <CashFlowReport timeRange={timeRange} />}
+              {activeTab === 'income-expense' && <IncomeExpenseReport timeRange={timeRange} />}
+              {activeTab === 'accounts' && <AccountsClassification onOpenTransfer={handleOpenTransfer} />}
+              {activeTab === 'transactions' && (
+                <TransactionsData
+                  onOpenNewTransaction={handleOpenNewTransaction}
+                  onEditTransaction={handleEditTransaction}
+                />
+              )}
+              {activeTab === 'setup' && <SetupView />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
-      {/* Transaction Modal (Add / Edit / Transfer) */}
       <TransactionModal
         isOpen={isTxModalOpen}
         onClose={() => {
@@ -101,17 +137,6 @@ function DashboardContent() {
         editingTransaction={editingTx}
         initialType={txModalInitialType}
       />
-
-      {/* Tactile Footer */}
-      <footer className="border-t border-slate-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#111827]/70 py-4 text-center text-xs text-slate-400 dark:text-slate-500 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
-            <span>Báo cáo Tài chính Cá nhân • Tactile UI Engine</span>
-          </div>
-          <span className="text-slate-500 dark:text-slate-400 font-medium">Bảo mật dữ liệu trực tiếp trên thiết bị cá nhân của bạn</span>
-        </div>
-      </footer>
     </div>
   );
 }

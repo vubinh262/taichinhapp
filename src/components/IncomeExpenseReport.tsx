@@ -264,8 +264,8 @@ export const IncomeExpenseReport: React.FC<IncomeExpenseReportProps> = ({ timeRa
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Tỷ Lệ Tiết Kiệm
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm border border-indigo-200/70 dark:border-indigo-800/60 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
-              %
+            <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm border border-indigo-200/70 dark:border-indigo-800/60 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]" aria-hidden>
+              <PiggyBank className="w-5 h-5" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-bold font-mono tracking-tight tabular-nums text-indigo-700 dark:text-indigo-400 mb-1.5">
@@ -475,11 +475,11 @@ export const IncomeExpenseReport: React.FC<IncomeExpenseReportProps> = ({ timeRa
                       {isDanger ? (
                         <span className="text-rose-600 dark:text-rose-400 flex items-center gap-0.5 font-mono">
                           <AlertCircle className="w-3 h-3" />
-                          Vượt {formatCurrency(Math.abs(item.remaining))} ({item.percentUsed}%)
+                          Vượt {formatCurrency(Math.abs(item.remaining))} · đã dùng {item.percentUsed}%
                         </span>
                       ) : item.budget > 0 ? (
                         <span className={`font-mono ${isWarning ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                          Còn {formatCurrency(item.remaining)} ({item.percentUsed}%)
+                          Còn {formatCurrency(item.remaining)} · đã dùng {item.percentUsed}%
                         </span>
                       ) : (
                         <span className="text-slate-400">Không giới hạn</span>

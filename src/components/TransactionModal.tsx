@@ -39,7 +39,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   editingTransaction,
   initialType = 'EXPENSE'
 }) => {
-  const { categories, accounts, addTransaction, updateTransaction, formatCurrency, getAccountBalance } = useFinance();
+  const { categories, accounts, transactions, addTransaction, updateTransaction, formatCurrency, getAccountBalance } = useFinance();
 
   const [type, setType] = useState<TransactionType>(initialType);
   const [rawAmount, setRawAmount] = useState<number>(0);
@@ -242,11 +242,18 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   if (!isOpen) return null;
 
   // Filter categories by type and search query
-  const filteredCategories = categories.filter((c) => {
-    if (c.type !== type) return false;
-    if (!categorySearch.trim()) return true;
-    return c.name.toLowerCase().includes(categorySearch.trim().toLowerCase());
+  // Hạng mục hay dùng nhất lên đầu để chọn nhanh hơn
+  const usage: Record<string, number> = {};
+  transactions.forEach((t) => {
+    if (t.categoryId) usage[t.categoryId] = (usage[t.categoryId] || 0) + 1;
   });
+  const filteredCategories = categories
+    .filter((c) => {
+      if (c.type !== type) return false;
+      if (!categorySearch.trim()) return true;
+      return c.name.toLowerCase().includes(categorySearch.trim().toLowerCase());
+    })
+    .sort((a, b) => (usage[b.id] || 0) - (usage[a.id] || 0));
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedAccount = accounts.find((a) => a.id === accountId);
@@ -276,7 +283,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         <div className="px-4 sm:px-6 py-3.5 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-white dark:bg-[#111827] shrink-0">
           <div className="flex items-center gap-3">
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-xs ${
-              type === 'EXPENSE' ? 'bg-rose-500' : type === 'INCOME' ? 'bg-emerald-600' : 'bg-indigo-600'
+              type === 'EXPENSE' ? 'bg-slate-900' : type === 'INCOME' ? 'bg-emerald-600' : 'bg-slate-700'
             }`}>
               {type === 'EXPENSE' && <TrendingDown className="w-4 h-4" />}
               {type === 'INCOME' && <TrendingUp className="w-4 h-4" />}
@@ -321,7 +328,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               onClick={() => handleTypeChange('EXPENSE')}
               className={`py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 type === 'EXPENSE'
-                  ? 'bg-rose-500 text-white shadow-sm'
+                  ? 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-900'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/[0.04]'
               }`}
             >
@@ -448,7 +455,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               </div>
 
               {/* Modern Grid with Squircle Icons and full wrapped text */}
-              <div className="grid grid-cols-4 gap-2.5 max-h-56 overflow-y-auto p-1.5 border border-slate-100 dark:border-white/[0.06] rounded-2xl bg-slate-50/60 dark:bg-white/[0.02]">
+              <div className="grid grid-cols-4 gap-2.5 p-1.5 border border-slate-100 dark:border-white/[0.06] rounded-2xl bg-slate-50/60 dark:bg-white/[0.02]">
                 {filteredCategories.map((cat) => {
                   const isSelected = categoryId === cat.id;
                   return (
@@ -798,7 +805,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             onClick={handleSubmit}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl text-white text-xs sm:text-sm font-bold shadow-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25)] transition-all active:scale-[0.98] cursor-pointer ${
               type === 'EXPENSE'
-                ? 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/25'
+                ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25'
                 : type === 'INCOME'
                 ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25'
                 : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25'

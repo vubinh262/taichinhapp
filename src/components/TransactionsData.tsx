@@ -56,6 +56,7 @@ export const TransactionsData: React.FC<TransactionsDataProps> = ({
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
   const pageSize = 12;
 
   // Filtered and Sorted list
@@ -292,8 +293,18 @@ export const TransactionsData: React.FC<TransactionsDataProps> = ({
           </button>
         </div>
 
+        {/* Trên điện thoại, bộ lọc chi tiết được thu gọn */}
+        <button
+          type="button"
+          onClick={() => setShowFilters((v) => !v)}
+          aria-expanded={showFilters}
+          className="md:hidden h-10 px-4 rounded-full border border-slate-200 dark:border-white/[0.1] bg-white/70 dark:bg-white/[0.05] text-sm font-semibold self-start cursor-pointer"
+        >
+          {showFilters ? 'Ẩn bộ lọc' : 'Bộ lọc nâng cao'}
+        </button>
+
         {/* Detailed Filter Selectors */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 pt-3 border-t border-slate-100 dark:border-white/[0.06] text-xs">
+        <div className={`${showFilters ? 'grid' : 'hidden'} md:grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 pt-3 border-t border-slate-100 dark:border-white/[0.06] text-xs`}>
           {/* Filter by Type */}
           <div>
             <label className="block text-[11px] font-semibold text-slate-400 dark:text-slate-400 mb-1.5">Loại giao dịch</label>
@@ -470,7 +481,40 @@ export const TransactionsData: React.FC<TransactionsDataProps> = ({
 
       {/* Main Transactions Table */}
       <div className="bg-white dark:bg-[#111827]/90 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm shadow-slate-900/[0.04] dark:shadow-black/40 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Danh sách dạng thẻ cho điện thoại */}
+        <ul className="md:hidden divide-y divide-slate-900/[0.06] dark:divide-white/[0.06]">
+          {paginatedList.length === 0 && (
+            <li className="py-10 px-4 text-center text-sm text-slate-500">Không tìm thấy giao dịch nào phù hợp với bộ lọc hiện tại.</li>
+          )}
+          {paginatedList.map((tx) => {
+            const cat = categories.find((c) => c.id === tx.categoryId);
+            const fromAcc = accounts.find((a) => a.id === tx.accountId);
+            const toAcc = accounts.find((a) => a.id === tx.toAccountId);
+            const isIncome = tx.type === 'INCOME';
+            const isTransfer = tx.type === 'TRANSFER';
+            const [, mm, dd] = tx.date.split('-');
+            return (
+              <li key={tx.id}>
+                <button onClick={() => onEditTransaction(tx)} className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer">
+                  <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isIncome ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-900 dark:bg-white/10 dark:text-white'}`}>
+                    <CategoryIcon name={isTransfer ? 'ArrowRightLeft' : (cat ? cat.icon : 'Receipt')} className="w-5 h-5" />
+                  </span>
+                  <span className="flex-1 min-w-0 flex flex-col">
+                    <span className="text-[15px] font-semibold truncate">{tx.note || (isTransfer ? 'Chuyển khoản nội bộ' : cat?.name || 'Khác')}</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 truncate">
+                      {dd}/{mm} · {isTransfer ? `${fromAcc?.name || ''} → ${toAcc?.name || ''}` : `${cat?.name || 'Khác'} · ${fromAcc?.name || ''}`}
+                    </span>
+                  </span>
+                  <span className={`text-[15px] font-semibold tabular-nums shrink-0 ${isIncome ? 'text-emerald-700 dark:text-emerald-400' : ''}`}>
+                    {isIncome ? '+' : isTransfer ? '' : '−'}{formatCurrency(tx.amount)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50/80 dark:bg-white/[0.03] border-b border-slate-200/70 dark:border-white/[0.06] text-[11px] font-semibold text-slate-400 dark:text-slate-400 uppercase tracking-wider">
@@ -621,7 +665,7 @@ export const TransactionsData: React.FC<TransactionsDataProps> = ({
                           <button
                             onClick={() => onEditTransaction(tx)}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-                            title="Sửa giao dịch"
+                            title="Sửa giao dịch" aria-label="Sửa giao dịch"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -632,7 +676,7 @@ export const TransactionsData: React.FC<TransactionsDataProps> = ({
                               }
                             }}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                            title="Xóa giao dịch"
+                            title="Xóa giao dịch" aria-label="Xóa giao dịch"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

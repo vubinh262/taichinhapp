@@ -34,7 +34,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Update mobile meta theme color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0B0F17' : '#059669');
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0B0F17' : '#ECEEEB');
     }
   }, [theme]);
 
