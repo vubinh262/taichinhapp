@@ -29,6 +29,8 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  const [newPw, setNewPw] = useState('');
+  const [pwDone, setPwDone] = useState(false);
   // Google chặn đăng nhập kiểu cửa sổ bật lên trong app iPhone "Thêm vào Màn hình chính",
   // và Firebase chưa cho phép tên miền github.io. Ở các nơi này hướng người dùng sang đăng nhập email.
   const isIOSApp =
@@ -47,7 +49,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     loginWithEmail, 
     registerWithEmail, 
     loginAnonymously,
-    logout 
+    logout,
+    addPassword 
   } = useAuth();
 
   const {
@@ -318,6 +321,47 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <span>Dữ liệu vẫn được lưu ngoại tuyến trên trình duyệt nếu mất kết nối mạng.</span>
               </div>
             </div>
+
+            {user.email && !user.providerData.some((p) => p.providerId === 'password') && (
+              <div className="rounded-2xl border border-emerald-600/20 bg-emerald-50/70 dark:bg-emerald-950/20 p-4 space-y-2.5">
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Dùng tài khoản này trên iPhone</p>
+                <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                  iPhone không đăng nhập Google được. Tạo mật khẩu cho <b>{user.email}</b>, rồi trên iPhone chọn <b>Đăng nhập</b> bằng email và mật khẩu này để thấy cùng dữ liệu.
+                </p>
+                {pwDone ? (
+                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Đã tạo mật khẩu. Giờ bạn đăng nhập bằng email trên iPhone được rồi.</p>
+                ) : (
+                  <form
+                    className="flex gap-2"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (newPw.length < 6) return;
+                      try {
+                        await addPassword(newPw);
+                        setPwDone(true);
+                        setNewPw('');
+                      } catch {
+                        /* lỗi đã hiện qua authError */
+                      }
+                    }}
+                  >
+                    <input
+                      type="password"
+                      value={newPw}
+                      onChange={(e) => setNewPw(e.target.value)}
+                      placeholder="Mật khẩu mới (ít nhất 6 ký tự)"
+                      aria-label="Mật khẩu mới"
+                      autoComplete="new-password"
+                      className="flex-1 min-w-0 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm"
+                    />
+                    <button type="submit" disabled={newPw.length < 6} className="h-10 px-4 rounded-xl bg-slate-900 text-white text-xs font-semibold disabled:opacity-40 cursor-pointer">
+                      Tạo mật khẩu
+                    </button>
+                  </form>
+                )}
+                {authError && <p className="text-xs text-orange-700 dark:text-orange-400">{authError}</p>}
+              </div>
+            )}
 
             <div className="flex justify-end gap-3 pt-2">
               <button

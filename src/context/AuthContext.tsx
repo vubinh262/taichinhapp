@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
+  EmailAuthProvider,
+  linkWithCredential,
   User, 
   signInWithPopup, 
   GoogleAuthProvider, 
@@ -22,6 +24,8 @@ interface AuthContextType {
   registerWithEmail: (email: string, pass: string, displayName?: string) => Promise<void>;
   loginAnonymously: () => Promise<void>;
   logout: () => Promise<void>;
+  /** Thêm mật khẩu cho tài khoản đang đăng nhập bằng Google để đăng nhập bằng email trên thiết bị khác */
+  addPassword: (pass: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,7 +41,11 @@ function mapAuthErrorMessage(errorCode: string): string {
     case 'auth/invalid-credential':
       return 'Email hoặc mật khẩu không chính xác.';
     case 'auth/email-already-in-use':
-      return 'Email này đã được đăng ký tài khoản khác.';
+      return 'Email này đã có tài khoản (có thể bạn từng đăng nhập bằng Google). Hãy đăng nhập Google trên máy tính rồi bấm "Tạo mật khẩu" trong mục Tài khoản, sau đó đăng nhập bằng email ở đây.';
+    case 'auth/provider-already-linked':
+      return 'Tài khoản này đã có mật khẩu. Bạn đăng nhập bằng email và mật khẩu đó nhé.';
+    case 'auth/requires-recent-login':
+      return 'Vì lý do bảo mật, hãy đăng xuất rồi đăng nhập Google lại, sau đó tạo mật khẩu.';
     case 'auth/weak-password':
       return 'Mật khẩu quá ngắn, vui lòng nhập ít nhất 6 ký tự.';
     case 'auth/popup-closed-by-user':
@@ -47,7 +55,7 @@ function mapAuthErrorMessage(errorCode: string): string {
     case 'auth/network-request-failed':
       return 'Không thể kết nối mạng. Vui lòng kiểm tra lại đường truyền internet.';
     case 'auth/operation-not-allowed':
-      return 'Phương thức đăng nhập này chưa được kích hoạt trong cài đặt Firebase.';
+      return 'Đăng nhập bằng email chưa được bật trong Firebase (Authentication → Sign-in method → Email/Password).';
     case 'auth/unauthorized-domain':
       return 'Địa chỉ của app chưa được Firebase cho phép đăng nhập Google. Bạn dùng Đăng nhập bằng Email trong lúc chờ cấu hình nhé.';
     case 'auth/operation-not-supported-in-this-environment':
@@ -124,6 +132,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const addPassword = async (pass: string) => {
+    setAuthError(null);
+    const current = auth.currentUser;
+    if (!current?.email) {
+      setAuthError('Tài khoản này không có email để gắn mật khẩu.');
+      throw new Error('no-email');
+    }
+    try {
+      await linkWithCredential(current, EmailAuthProvider.credential(current.email, pass));
+      await current.reload();
+      setUser(auth.currentUser);
+    } catch (err: any) {
+      console.error('Link password error:', err);
+      setAuthError(mapAuthErrorMessage(err?.code || ''));
+      throw err;
+    }
+  };
+
   const logout = async () => {
     setAuthError(null);
     try {
@@ -146,7 +172,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loginWithEmail,
         registerWithEmail,
         loginAnonymously,
-        logout
+        logout,
+        addPassword
       }}
     >
       {children}
