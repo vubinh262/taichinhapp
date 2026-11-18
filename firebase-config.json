@@ -1,12 +1,12 @@
 {
   "_note": "Cấu hình Firebase của app. Đổi sang dự án mới: thay các giá trị dưới đây bằng cấu hình web app trong Firebase Console (Project settings → Your apps). Khoá apiKey của web app là công khai theo thiết kế của Firebase.",
-  "apiKey": "AIzaSyBixWQcY32CPqhO4LIQevzttzKIBQhN6Vk",
-  "authDomain": "earnest-goal-jdtd0.firebaseapp.com",
-  "projectId": "earnest-goal-jdtd0",
-  "storageBucket": "earnest-goal-jdtd0.firebasestorage.app",
-  "messagingSenderId": "806835617555",
-  "appId": "1:806835617555:web:16201d8e6ca2b21c6c24e6",
-  "measurementId": "",
-  "firestoreDatabaseId": "ai-studio-remixbocotichnhc-6f9d7488-8fe1-4306-bdd0-c22563789af3",
+  "apiKey": "AIzaSyCaDcO4wX9SBL3NWw_vKTpKhdXMQcT26Jc",
+  "authDomain": "taichinh-2ba99.firebaseapp.com",
+  "projectId": "taichinh-2ba99",
+  "storageBucket": "taichinh-2ba99.firebasestorage.app",
+  "messagingSenderId": "245909787420",
+  "appId": "1:245909787420:web:021af508e652fc7b8920d9",
+  "measurementId": "G-9K87FLBWSN",
+  "firestoreDatabaseId": "(default)",
   "hostingDomains": []
 }
