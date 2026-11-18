@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isOnHosting } from '../lib/firebase';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useFinance } from '../context/FinanceContext';
@@ -39,7 +40,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     ((navigator as unknown as { standalone?: boolean }).standalone === true ||
       window.matchMedia?.('(display-mode: standalone)').matches);
   const googleUnsupported =
-    isIOSApp || (typeof location !== 'undefined' && location.hostname.endsWith('github.io'));
+    !isOnHosting && (isIOSApp || (typeof location !== 'undefined' && location.hostname.endsWith('github.io')));
 
   const { 
     user, 

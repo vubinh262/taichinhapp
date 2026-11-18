@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
+  signInWithRedirect,
+  getRedirectResult,
   EmailAuthProvider,
   linkWithCredential,
   User, 
@@ -12,7 +14,7 @@ import {
   signInAnonymously as fbSignInAnonymously,
   updateProfile
 } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth, isOnHosting } from '../lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -73,6 +75,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Nhận kết quả sau khi quay lại từ trang đăng nhập Google (iOS)
+    getRedirectResult(auth).catch((err: any) => {
+      console.error('Google redirect error:', err);
+      setAuthError(mapAuthErrorMessage(err?.code || ''));
+    });
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -88,6 +95,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
+      // iPhone/iPad chặn cửa sổ bật lên trong app web; khi app chạy trên tên miền Firebase Hosting
+      // thì chuyển trang đăng nhập (redirect) cùng tên miền – cách này chạy ổn định trên iOS.
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (isIOS && isOnHosting) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
       await signInWithPopup(auth, provider);
     } catch (err: any) {
       console.error('Google Sign In error:', err);
